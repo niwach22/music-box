@@ -1,85 +1,3 @@
- 
- 
-  
- ​//​ constants won't change. They're used here to set pin numbers: 
- ​const​ ​int​ buttonPin = ​2​;    ​//​ the number of the pushbutton pin 
- ​const​ ​int​ ledPin = ​13​;      ​//​ the number of the LED pin 
-  
- ​//​ Variables will change: 
- ​int​ ledState = HIGH;         ​//​ the current state of the output pin 
- ​int​ buttonState;             ​//​ the current reading from the input pin 
- ​int​ lastButtonState = LOW;   ​//​ the previous reading from the input pin 
-  
- ​//​ the following variables are unsigned longs because the time, measured in 
- ​//​ milliseconds, will quickly become a bigger number than can be stored in an int. 
- ​unsigned​ ​long​ lastDebounceTime = ​0​;  ​//​ the last time the output pin was toggled 
- ​unsigned​ ​long​ debounceDelay = ​50​;    ​//​ the debounce time; increase if the output flickers 
-  
- ​void​ ​setup​() { 
- ​  ​pinMode​(buttonPin, INPUT); 
- ​  ​pinMode​(ledPin, OUTPUT); 
-  
- ​  ​//​ set initial LED state 
- ​  ​digitalWrite​(ledPin, ledState); 
- ​} 
-  
- ​void​ ​loop​() { 
- ​  ​//​ read the state of the switch into a local variable: 
- ​  ​int​ reading = ​digitalRead​(buttonPin); 
-  
- ​  ​//​ check to see if you just pressed the button 
- ​  ​//​ (i.e. the input went from LOW to HIGH), and you've waited long enough 
- ​  ​//​ since the last press to ignore any noise: 
-  
- ​  ​//​ If the switch changed, due to noise or pressing: 
- ​  ​if​ (reading != lastButtonState) { 
- ​    ​//​ reset the debouncing timer 
- ​    lastDebounceTime = ​millis​(); 
- ​  } 
-  
- ​  ​if​ ((​millis​() - lastDebounceTime) > debounceDelay) { 
- ​    ​//​ whatever the reading is at, it's been there for longer than the debounce 
- ​    ​//​ delay, so take it as the actual current state: 
-  
- ​    ​//​ if the button state has changed: 
- ​    ​if​ (reading != buttonState) { 
- ​      buttonState = reading; 
-  
- ​      ​//​ only toggle the LED if the new button state is HIGH 
- ​      ​if​ (buttonState == HIGH) { 
- ​        ledState = !ledState; 
- ​      } 
- ​    } 
- ​  } 
-  
- ​  ​//​ set the LED: 
- ​  ​digitalWrite​(ledPin, ledState); 
-  
- ​  ​//​ save the reading. Next time through the loop, it'll be the lastButtonState: 
- ​  lastButtonState = reading; 
- ​}
-
-/***************************************************
- DFPlayer - A Mini MP3 Player For Arduino
- <https://www.dfrobot.com/product-1121.html>
- 
- ***************************************************
- This example shows the all the function of library for DFPlayer.
- 
- Created 2016-12-07
- By [Angelo qiao](Angelo.qiao@dfrobot.com)
- 
- GNU Lesser General Public License.
- See <http://www.gnu.org/licenses/> for details.
- All above must be included in any redistribution
- ****************************************************/
-
-/***********Notice and Trouble shooting***************
- 1.Connection and Diagram can be found here
-<https://www.dfrobot.com/wiki/index.php/DFPlayer_Mini_SKU:DFR0299#Connection_Diagram>
- 2.This code is tested on Arduino Uno, Leonardo, Mega boards.
- ****************************************************/
-
 #include "Arduino.h"
 #include "SoftwareSerial.h"
 #include "DFRobotDFPlayerMini.h"
@@ -88,8 +6,21 @@ SoftwareSerial mySoftwareSerial(10, 11); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 void printDetail(uint8_t type, int value);
 
+//for button//////////////
+const int LED = 3;    //
+const int BUTTON = 7;  //
+int val = 0;     // 
+int old_val = 0; //
+int state = 0;   //
+//////////////////////////
+
 void setup()
 {
+//for button/////////////
+    pinMode(LED, OUTPUT);   // tell Arduino LED is an output
+  pinMode(BUTTON, INPUT); // and BUTTON is an input   
+////////////////////////
+    
   mySoftwareSerial.begin(9600);
   Serial.begin(115200);
   
@@ -181,13 +112,24 @@ void setup()
 
 void loop()
 {
-  static unsigned long timer = millis();
-  
-  if (millis() - timer > 3000) {
-    timer = millis();
-    myDFPlayer.next();  //Play next mp3 every 3 second.
-  }
-  
+///////////////  
+    val = digitalRead(BUTTON); // read input value and store it
+                            // yum, fresh
+
+ // check if there was a transition
+ if ((val == HIGH) && (old_val == LOW)){
+   state = 1 - state;
+   delay(10);
+        old_val = val; // val is now old, let's store it
+
+ if (state == 1) {
+   digitalWrite(LED, HIGH); // turn LED ON
+   myDFPlayer.play(1);
+ } else {
+   digitalWrite(LED, LOW);
+   myDFPlayer.pause();
+ }
+//////////////
   if (myDFPlayer.available()) {
     printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
   }
