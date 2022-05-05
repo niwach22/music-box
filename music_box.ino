@@ -124,15 +124,18 @@ void loop()
 
  if (state == 1) {
    digitalWrite(LED, HIGH); // turn LED ON
-   myDFPlayer.play(1);
- } else {
+   myDFPlayer.play(2);
+ } 
+ if (state == 0) {
    digitalWrite(LED, LOW);
    myDFPlayer.pause();
+ }
  }
 //////////////
   if (myDFPlayer.available()) {
     printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
   }
+
 }
 
 void printDetail(uint8_t type, int value){
