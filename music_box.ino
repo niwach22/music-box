@@ -120,7 +120,8 @@ void loop()
  if ((val == HIGH) && (old_val == LOW)){
    state = 1 - state;
    delay(10);
-        old_val = val; // val is now old, let's store it
+ }
+ old_val = val; // val is now old, let's store it
 
  if (state == 1) {
    digitalWrite(LED, HIGH); // turn LED ON
@@ -130,7 +131,7 @@ void loop()
    digitalWrite(LED, LOW);
    myDFPlayer.pause();
  }
- }
+ 
 //////////////
   if (myDFPlayer.available()) {
     printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
