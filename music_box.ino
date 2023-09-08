@@ -39,7 +39,7 @@ void setup()
   myDFPlayer.setTimeOut(500); //Set serial communictaion time out 500ms
   
   //----Set volume----
-  myDFPlayer.volume(10);  //Set volume value (0~30).
+  myDFPlayer.volume(3);  //Set volume value (0~30).初期値は10
   myDFPlayer.volumeUp(); //Volume Up
   myDFPlayer.volumeDown(); //Volume Down
   
@@ -119,7 +119,7 @@ void loop()
  // check if there was a transition
  if ((val == HIGH) && (old_val == LOW)){
    state = 1 - state;
-   delay(10);
+   delay(50);
  }
  old_val = val; // val is now old, let's store it
 
